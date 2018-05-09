@@ -1,0 +1,31 @@
+<HTML>
+	<TITLE>GETT Domotic System</TITLE>
+	<HEADER>
+		<script src="/jquery.min.js"></script>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" type="text/css" href="/jquery-ui.css">
+		<link rel="stylesheet" type="text/css" href="/style.css">
+	</HEADER>
+	<BODY align = "center">
+		<H1>Configuration Page</H1>
+		<FORM method="POST" action="/">
+			<TABLE style ="width: 100%">
+				<TR>
+					<TD><LABEL>SSID</LABEL></TD>
+					<TD><INPUT type="text" name="ssid" value="<<SSID>>"/></TD>
+				</TR>
+				<TR>
+					<TD><LABEL>Password</LABEL></TD>
+					<TD><INPUT type="password" name="password" value="<<PASSWORD>>"/></TD>
+				</TR>
+				<TR>
+					<TD><LABEL>Hostname</LABEL></TD>
+					<TD><INPUT type="text" id="hotname" name="hostname" value="<<HOSTNAME>>"/></TD>
+				</TR>
+				<TR>
+					<TD colspan="2" align ="center"><BUTTON class="ui-button ui-widget ui-corner-all" type="Submit">Update</BUTTON></TD>
+				</TR>
+			</TABLE>
+		</FORM>
+	</BODY>
+</HTML>

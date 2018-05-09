@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<HTML>
+	<TITLE>GETT Domotic System</TITLE>
+	<HEAD>
+		<script src="jquery.min.js"></script>
+		<script type="text/javascript" language="javascript" src="device.json"></script>
+		<script type="text/javascript" language="javascript" src="relays.json"></script>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<link rel="stylesheet" type="text/css" href="jquery-ui.css">
+		<link rel="stylesheet" type="text/css" href="style.css">
+		<script> 
+			$(document).ready(function(e) {
+				$.getJSON( "device.json", function(data){
+					$("#hostname").append(data[0].hostname);
+					if(data[0].status ==0)
+					{
+						document.getElementById("led").className = "circle_red";
+						$("#status").append("OFF");
+					}
+					else
+					{
+						document.getElementById("led").className = "circle_green";
+						$("#status").append("ON");
+					}
+				});	
+				$.getJSON( "relays.json", function(data){
+					data = $(data).toArray().reverse();
+					$.each(data,function(id, relays){
+						var row = document.getElementById("relays_table").insertRow(1);
+						var cell1 = row.insertCell(0);
+						var cell2 = row.insertCell(1);
+						cell1.className = "clients_table_cell";
+						cell1.colSpan   = 2;
+						cell2.className = "clients_table_cell";
+						cell1.innerHTML = relays.name;
+						cell2.innerHTML ="<BUTTON class=\"ui-button ui-widget ui-corner-all\" type=\"Submit\"> - DELETE</BUTTON>";
+					});
+				});
+			});
+		</script>
+	</HEAD>
+	<BODY align = "center">
+		<H1><div id="hostname"></div> Device</H1>
+		<TABLE>
+		<TR>
+		<TD class="status_action">Actual Status:</TD>
+			<TD class="status_action" id="status"><DIV id="led">&nbsp;&nbsp;&nbsp;&nbsp;</DIV></TD>
+			<TD class="status_action"><a class="ui-button ui-widget ui-corner-all" href="">REFRESH</a></TD>
+		</TR>
+		<TR>
+			<FORM method="POST" action="">
+			<TD class="status_action">
+				<FORM method="POST" action="">
+					<input type="hidden" name="Status" value="on" />
+					<BUTTON class="ui-button ui-widget ui-corner-all" type="Submit">TURN<BR/>ON</BUTTON>
+				</FORM>
+			</TD>
+			<TD class="status_action">
+				<FORM method="POST" action="">
+					<INPUT type="hidden" name="Status" value="off" />
+					<BUTTON class="ui-button ui-widget ui-corner-all" type="Submit">TURN<BR/>OFF</BUTTON>
+				</FORM>
+			</TD>
+			<TD class="status_action">
+				<FORM method="POST" action="">
+					<INPUT type="hidden" name="Status" value="flip" />
+					<BUTTON class="ui-button ui-widget ui-corner-all" type="Submit">FLIP<BR/>STAT</BUTTON>
+				</FORM>
+			</TD>
+		</TR>
+		</TABLE>
+		<BR/>
+		<TABLE class="clients_table" id="relays_table">
+			<TR><TD colspan="3">Clients</TD></TR>
+			<TR>
+				<FORM method="POST" action ="">
+				<TD colspan ="2" class="clients_table_cell">
+					<INPUT type="text" name="client_name" value=""/>
+				</TD>
+				<TD class="clients_table_cell">
+					<BUTTON class="ui-button ui-widget ui-corner-all" type="Submit"> + ADD</BUTTON>
+				</TD>
+				</FORM>
+			</TR>
+		</TABLE>
+        <BR />
+        <TABLE>
+            <TR><TD><a class="ui-button ui-widget ui-corner-all" href="/reset">RESET DEVICE</a></TD></TR>
+        </TABLE>
+	</BODY>
+</HTML>
