@@ -37,7 +37,7 @@ void setup()
 		WiFi.hostname("deviceAP");
 
 	Serial.println("\nRetrieving SSID and Password from EEPROM");
-	if (readSSID() && readPassword())
+	if (readWifiCredential())
 	{
 		WiFi.mode(WIFI_STA);
 		Serial.print("Connecting to SSID ");
@@ -111,5 +111,33 @@ void setup()
 // The loop function is called in an endless loop
 void loop()
 {
-	server.handleClient();
+	  bSwitch.update();
+	  bReset.update();
+
+	  if (bSwitch.fell() || bReset.fell())
+	  {
+	    digitalWrite(gpioButton, HIGH);
+	    digitalWrite(gpioReset, HIGH);
+	    flipStatus();
+	    setLocalStatus();
+	    for (int i = 0; i < iCountRelay; i++)
+	      setRelayStatus(strRelay[i]);
+	  }
+
+	  if(iConnectTry > 10)
+	  {
+	    iConnectTry = 0;
+	    if(!dht11.read(pinDHT11, &bTemperature, &bHumidity, NULL))
+	    {
+	      Serial.print("Temperature: ");
+	      Serial.print(bTemperature);
+	      Serial.print("*C - Humidity:");
+	      Serial.print(bHumidity);
+	      Serial.println("% ");
+	    }
+	  }
+	  else
+	    iConnectTry++;
+
+	  server.handleClient();
 }

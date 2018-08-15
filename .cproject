@@ -41,7 +41,6 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/DomoticGETT/libraries/Wire}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/DomoticGETT/libraries/ESP8266mDNS}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/DomoticGETT/libraries/SPI}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/DomoticGETT/libraries/AVR_Standard_C_Time_Library/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/DomoticGETT/libraries/AVR_Standard_C_Time_Library}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.cpp.sketch.input.1184468248" name="CPP source files" superClass="io.sloeber.compiler.cpp.sketch.input"/>
@@ -70,7 +69,6 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/DomoticGETT/libraries/Wire}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/DomoticGETT/libraries/ESP8266mDNS}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/DomoticGETT/libraries/SPI}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/DomoticGETT/libraries/AVR_Standard_C_Time_Library/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/DomoticGETT/libraries/AVR_Standard_C_Time_Library}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.c.sketch.input.1295889799" name="C Source Files" superClass="io.sloeber.compiler.c.sketch.input"/>
@@ -99,7 +97,6 @@
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/DomoticGETT/libraries/Wire}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/DomoticGETT/libraries/ESP8266mDNS}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/DomoticGETT/libraries/SPI}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/DomoticGETT/libraries/AVR_Standard_C_Time_Library/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/DomoticGETT/libraries/AVR_Standard_C_Time_Library}&quot;"/>
 								</option>
 								<inputType id="io.sloeber.compiler.S.sketch.input.782622813" name="Assembly source files" superClass="io.sloeber.compiler.S.sketch.input"/>

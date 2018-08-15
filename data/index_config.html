@@ -1,31 +1,58 @@
 <HTML>
-	<TITLE>GETT Domotic System</TITLE>
-	<HEADER>
-		<script src="/jquery.min.js"></script>
-		<meta name="viewport" content="width=device-width, initial-scale=1">
-		<link rel="stylesheet" type="text/css" href="/jquery-ui.css">
-		<link rel="stylesheet" type="text/css" href="/style.css">
-	</HEADER>
-	<BODY align = "center">
-		<H1>Configuration Page</H1>
-		<FORM method="POST" action="/">
-			<TABLE style ="width: 100%">
-				<TR>
-					<TD><LABEL>SSID</LABEL></TD>
-					<TD><INPUT type="text" name="ssid" value="<<SSID>>"/></TD>
-				</TR>
-				<TR>
-					<TD><LABEL>Password</LABEL></TD>
-					<TD><INPUT type="password" name="password" value="<<PASSWORD>>"/></TD>
-				</TR>
-				<TR>
-					<TD><LABEL>Hostname</LABEL></TD>
-					<TD><INPUT type="text" id="hotname" name="hostname" value="<<HOSTNAME>>"/></TD>
-				</TR>
-				<TR>
-					<TD colspan="2" align ="center"><BUTTON class="ui-button ui-widget ui-corner-all" type="Submit">Update</BUTTON></TD>
-				</TR>
-			</TABLE>
-		</FORM>
-	</BODY>
+<TITLE>GETT Domotic System</TITLE>
+<HEADER>
+	<script src="jquery.min.js"></script>
+	<script type="text/javascript" language="javascript" src="device.json"></script>
+	<script type="text/javascript" language="javascript" src="wifi.json"></script>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" type="text/css" href="jquery-ui.css">
+	<link rel="stylesheet" type="text/css" href="style.css">
+	<script> 
+		$(document).ready(function(e) {
+			$.getJSON( "device.json", function(data){
+				console.log(data);
+				document.getElementById("hostname").value  = data[0].hostname;
+			});
+			$.getJSON( "wifi.json", function(data){
+				console.log(data);
+				document.getElementById("ssid").value = data[0].ssid;
+				document.getElementById("password").value= data[0].password; 
+			});
+		});
+	</script>
+</HEADER>
+<BODY align = "center">
+	<p>&nbsp;</p>
+	<H1>Configuration Page</H1>
+	<p>&nbsp;</p>
+	<FORM method="POST" action="/">
+		<div class="divTable">
+			<div class="divTableBody">
+				<div class="divTableRow">
+					<div class="divTableCell"><LABEL>Ssid</LABEL></div>
+					<div class="divTableCell"><INPUT id="ssid" type="text" name="ssid" value="<<SSID>>"/>
+					</div>
+				</div>
+				<div class="divTableRow">
+					<div class="divTableCell"><LABEL>Password</LABEL></div>
+					<div class="divTableCell"><INPUT id="password" type="password" name="password" value="<<PASSWORD>>"/>
+					</div>
+				</div>
+				<div class="divTableRow">
+					<div class="divTableCell"><LABEL>Hostname</LABEL></div>
+					<div class="divTableCell"><INPUT id="hostname" type="text" name="hostname" value="<<HOSTNAME>>"/>
+					</div>
+				</div>
+			</div>
+		</div>
+		<p>&nbsp;</p>
+		<div class="divTable">
+			<div class="divTableBody">
+				<div class="divTableRow">
+					<div class="divTableCellNoBord"><BUTTON class="ui-button ui-widget ui-corner-all" type="Submit">Update</BUTTON></div>
+				</div>
+			</div>
+		</div>
+	</FORM>
+</BODY>
 </HTML>

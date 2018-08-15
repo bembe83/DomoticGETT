@@ -286,6 +286,29 @@ boolean readPassword()
 		return true;
 }
 
+boolean readWifiCredential()
+{
+	//password = readString(PASSWORD_ADDR);
+	StaticJsonBuffer<200> jsonBuffer; // @suppress("Abstract class cannot be instantiated")
+	String json = readTextFile(strWifiFile);
+	password = "";
+
+	if(json.length()>0)
+	{
+		JsonObject& root = jsonBuffer.parseObject(json);
+		if(sizeof(root)>0)
+		{
+			ssid = String(root[ssidParam].as<const char*>());
+			password = String(root[passParam].as<const char*>());
+		}
+	}
+
+	if (ssid.length() <=0 || password.length() <= 0)
+		return false;
+	else
+		return true;
+}
+
 boolean readHostName()
 {
 	//hostName = readString(HOSTNAME_ADDR);
@@ -428,7 +451,7 @@ void handleHttpCall()
 			}
 			else if (server.argName(i).equalsIgnoreCase("addrelay"))
 			{
-				if (iCountRelay < MAX_RELAY)
+				if (iCountRelay < MAX_RELAY && server.arg(i).length() > 0)
 				{
 					addRelay(server.arg(i), false);
 				}
@@ -464,8 +487,8 @@ void handleConfigCall()
 	String strHostParam = "";
 	int iParamSet = 0;
 
-	StaticJsonBuffer<200> jsonBufWifi; // @suppress("Abstract class cannot be instantiated")
-	StaticJsonBuffer<200> jsonBufHost; // @suppress("Abstract class cannot be instantiated")
+	StaticJsonBuffer<200> jsonBufWifi;
+	StaticJsonBuffer<200> jsonBufHost;
 
 	Serial.println("ConfigCall");
 	Serial.print("# of parameters: ");
@@ -476,7 +499,7 @@ void handleConfigCall()
 			strSSID = server.arg(i);
 		else if (server.argName(i).equalsIgnoreCase(passParam))
 			strPassword = server.arg(i);
-		else if (server.argName(i).equalsIgnoreCase(strHostName))
+		else if (server.argName(i).equalsIgnoreCase(hostParam))
 			strHostName = server.arg(i);
 	}
 
