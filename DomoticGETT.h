@@ -24,6 +24,7 @@
 #include <SimpleDHT.h>
 #include <Wire.h>
 #include <Domotic.h>
+
 //end of add your includes here
 MDNSResponder mdns;
 ESP8266HTTPUpdateServer httpUpdater;
@@ -80,14 +81,23 @@ Bounce bBtn[BTN_COUNT] = {bSwitch, bReset};
 String strRelay[MAX_RELAY];
 int iRelayStatus[MAX_RELAY];
 int iCountRelay = 0;
-
 int iConnectTry = 0;
 
 //add your function definitions for the project DomoticGETT here
 
 void setupInitRelayStatus()
 {
-	int iInitValue = readByte(INIT_STATUS_ADDR);
+	StaticJsonBuffer<200> jsonBuffer; // @suppress("Abstract class cannot be instantiated")
+	String json = readTextFile(strWifiFile);
+	int iInitValue = -1;
+
+	if(json.length()>0)
+	{
+		JsonObject& root = jsonBuffer.parseObject(json);
+		if(sizeof(root)>0)
+			iInitValue = root[statusParam].as<int>();
+	}
+
 	if(iInitValue == LOW)
 		relayStatus = LOW;
 	else
@@ -96,10 +106,9 @@ void setupInitRelayStatus()
 
 void initialisePins()
 {
-	iPinsStatus[1] = relayStatus;
-
 	for (int i = 0; i < PINS_COUNT; i++)
 	{
+		iPinsStatus[i] = relayStatus;
 		pinMode(iPins[i], iPinsFunction[i]);
 		digitalWrite(iPins[i], iPinsStatus[i]);
 	}
@@ -126,8 +135,6 @@ void setupDHT11()
 		Serial.println(pinDHT11);
 	}
 }
-
-
 
 void flipStatus()
 {
@@ -191,28 +198,7 @@ String getWebPage()
 {
 	String strWebPage = readTextFile("/index.html");
 
-	if(strWebPage.length() > 0)
-	{
-		String strRelaysList = "";
-
-		for (int i = 0; i < iCountRelay; i++)
-			strRelaysList += "\t\t\t\t<TR><FORM method=\"POST\" action =\"\"><TD class=\"clients_table_cell\"><INPUT type=\"hidden\" name=\"delrelay\" value =\"" + strRelay[i] + "\"/><LABEL value =\"" + strRelay[i] + "\">" + strRelay[i] + "</LABEL></TD><TD class=\"clients_table_cell\"><BUTTON type=\"Submit\"> - DELETE</BUTTON></TD></FORM></TR>\n";
-
-		if (relayStatus == LOW)
-		{
-			strWebPage.replace("<<STATUS>>", "OFF");
-			strWebPage.replace("<<COLOR>>", "red");
-		}
-		else
-		{
-			strWebPage.replace("<<STATUS>>", "ON");
-			strWebPage.replace("<<COLOR>>", "green");
-		}
-
-		strWebPage.replace("<<HOSTNAME>>", hostName);
-		strWebPage.replace("<<RELAYS>>", strRelaysList);
-	}
-	else
+	if(strWebPage.length() == 0)
 	{
 		strWebPage = "<!DOCTYPE html>\n<HTML>\n"
 				"\t<TITLE>GETT Domotic System</TITLE>\n"
@@ -228,13 +214,7 @@ String getConfigPage()
 {
 	String strConf = readTextFile("/index_config.html");
 
-	if(strConf != "")
-	{
-		strConf.replace("<<HOSTNAME>>", hostName);
-		strConf.replace("<<SSID>>", ssid);
-		strConf.replace("<<PASSWORD>>", password);
-	}
-	else
+	if(strConf.length() == 0)
 	{
 		strConf = "<!DOCTYPE html>\n<HTML>\n"
 				"\t<TITLE>GETT Domotic System</TITLE>\n"
@@ -289,6 +269,7 @@ boolean readPassword()
 boolean readWifiCredential()
 {
 	//password = readString(PASSWORD_ADDR);
+	//ssid = readString(SSID_ADDR);
 	StaticJsonBuffer<200> jsonBuffer; // @suppress("Abstract class cannot be instantiated")
 	String json = readTextFile(strWifiFile);
 	password = "";
@@ -299,7 +280,9 @@ boolean readWifiCredential()
 		if(sizeof(root)>0)
 		{
 			ssid = String(root[ssidParam].as<const char*>());
-			password = String(root[passParam].as<const char*>());
+			String strEncPwd = String(root[passParam].as<const char*>());
+
+			password = decrypt(ssid,strEncPwd);
 		}
 	}
 
@@ -346,9 +329,9 @@ void addRelay(String strName, boolean bAddDuplicates)
 	if (strName.length() > 0 && (iOccur == 0 || bAddDuplicates))
 	{
 		strRelay[iCountRelay] = strName;
-		saveString(RELAY_START_ADDR + (iCountRelay * STRING_BLOCK_LENGHT), strName);
+		saveEEPROMString(RELAY_START_ADDR + (iCountRelay * STRING_BLOCK_LENGHT), strName);
 		iCountRelay++;
-		saveByte(RELAY_COUNT_ADDR, iCountRelay);
+		saveEEPROMByte(RELAY_COUNT_ADDR, iCountRelay);
 	}
 	else
 	{
@@ -362,28 +345,28 @@ void emptyRelayList()
 {
 	for (int i = 0; i < MAX_RELAY; i++)
 	{
-		saveString(RELAY_START_ADDR + (i * STRING_BLOCK_LENGHT), "");
+		saveEEPROMString(RELAY_START_ADDR + (i * STRING_BLOCK_LENGHT), "");
 	}
-	saveByte(RELAY_COUNT_ADDR, 0);
+	saveEEPROMByte(RELAY_COUNT_ADDR, 0);
 }
 
 void saveRelayList()
 {
 	for (int i = 0; i < iCountRelay; i++)
 	{
-		saveString(RELAY_START_ADDR + (i * STRING_BLOCK_LENGHT), strRelay[i]);
+		saveEEPROMString(RELAY_START_ADDR + (i * STRING_BLOCK_LENGHT), strRelay[i]);
 	}
-	saveByte(RELAY_COUNT_ADDR, iCountRelay);
+	saveEEPROMByte(RELAY_COUNT_ADDR, iCountRelay);
 }
 
 void readRelayList()
 {
-	iCountRelay = readByte(RELAY_COUNT_ADDR);
+	iCountRelay = readEEPROMByte(RELAY_COUNT_ADDR);
 
 	if(iCountRelay > MAX_RELAY)
 	{
 		emptyRelayList();
-		iCountRelay = readByte(RELAY_COUNT_ADDR);
+		iCountRelay = readEEPROMByte(RELAY_COUNT_ADDR);
 	}
 
 	Serial.print("Stored ");
@@ -392,7 +375,7 @@ void readRelayList()
 
 	for (int i = 0; i < iCountRelay; i++)
 	{
-		strRelay[i] = readString(RELAY_START_ADDR + (i * STRING_BLOCK_LENGHT));
+		strRelay[i] = readEEPROMString(RELAY_START_ADDR + (i * STRING_BLOCK_LENGHT));
 		iRelayStatus[i] = 0;//getRelayStatus(i);
 		Serial.print("Client ");
 		Serial.print(i + 1);
@@ -451,7 +434,7 @@ void handleHttpCall()
 			}
 			else if (server.argName(i).equalsIgnoreCase("addrelay"))
 			{
-				if (iCountRelay < MAX_RELAY && server.arg(i).length() > 0)
+				if (iCountRelay < MAX_RELAY && server.arg(server.argName(i)).length() > 0)
 				{
 					addRelay(server.arg(i), false);
 				}
@@ -464,7 +447,7 @@ void handleHttpCall()
 			}
 			else if (server.argName(i).equalsIgnoreCase("delrelay"))
 			{
-				if (removeRelay(server.arg(i)))
+				if (removeRelay(server.arg(server.argName(i))))
 				{
 					Serial.print("Relay removed");
 				}
@@ -516,7 +499,11 @@ void handleConfigCall()
 	if (strPassword.length() > 0)
 	{
 		//saveString(PASSWORD_ADDR, strPassword);
-		rootWifi[passParam] = strPassword;
+		if(strPassword != encrypt(ssid,password))
+			rootWifi[passParam] = encrypt(strSSID,strPassword);
+		else
+			rootWifi[passParam] = strPassword;
+
 		iParamSet++;
 	}
 

@@ -17,7 +17,7 @@ void setup()
 	initialisePins();
 	setupDHT11();
 	readRelayList();
-	listSPIFFSfiles();
+	//listSPIFFSfiles();
 
 	server.on("/style.css", [](){handleFileRead("/style.css", server);});
 	server.on("/jquery-ui.css", [](){handleFileRead("/jquery-ui.css", server);});
@@ -134,6 +134,10 @@ void loop()
 	      Serial.print("*C - Humidity:");
 	      Serial.print(bHumidity);
 	      Serial.println("% ");
+	    }
+	    else
+	    {
+	    	Serial.println("No DHT11 detected");
 	    }
 	  }
 	  else
